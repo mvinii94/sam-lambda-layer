@@ -1,5 +1,9 @@
 import json
+import logging
 import requests
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
@@ -25,17 +29,16 @@ def lambda_handler(event, context):
     """
 
     try:
-        ip = requests.get("http://checkip.amazonaws.com/")
+        ip = requests.get("https://checkip.amazonaws.com/").text.replace("\n", "")
+        logger.info("Requester IP: %s" % ip)
     except requests.RequestException as e:
-        # Send some context about this error to Lambda Logs
-        print(e)
-
+        logging.error(e)
         raise e
 
     return {
         "statusCode": 200,
         "body": json.dumps({
             "message": "hello world",
-            "location": ip.text.replace("\n", "")
+            "location": ip
         }),
     }
