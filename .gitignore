@@ -2,6 +2,9 @@
 # Pycharm
 .idea/
 
+# SAM
+package.yaml
+
 ### Linux ###
 *~
 
