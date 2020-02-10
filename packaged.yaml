@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Timeout: 10
+Resources:
+  RequestsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: python-requests-layer
+      Description: requests sample dependency
+      ContentUri: s3://marcuram-ireland/f812c6c9f1ac78bce2d92f604a1c3c21
+      CompatibleRuntimes:
+      - python3.6
+      - python3.7
+      - python3.8
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://marcuram-ireland/79b8cf6636fd710aed1b22fb7f246fb8
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Layers:
+      - Ref: RequestsLayer
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+Outputs:
+  HelloWorldApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+  HelloWorldFunction:
+    Description: Hello World Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - HelloWorldFunction
+      - Arn
+  HelloWorldFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value:
+      Fn::GetAtt:
+      - HelloWorldFunctionRole
+      - Arn
